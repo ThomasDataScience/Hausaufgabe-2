@@ -1,0 +1,104 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Zuerst eine kleine Fingerübung.
+
+```{r}
+fit <- lm (cars$dist ~ cars$speed)
+```
+
+```{r}
+plot (cars)
+abline (fit)
+```
+```{r}
+summary (fit)
+```
+
+```{r}
+library(tidyverse)
+```
+```{r}
+books <- BX_Books %>%
+  select(ISBN,`Book-Title`,`Book-Author`,`Year-Of-Publication`,Publisher)
+```
+
+```{r}
+users <- BX_Users %>%
+  mutate(Age = as.numeric(Age))
+```
+
+
+# Gibt es eine lineare Beziehung zwischen Anzahl Bücher pro Publisher und Anzahl Ratings, die die Bücher eines Publishers erhalten?
+
+# In anderen Worten: Je mehr Bücher ein Verlag herausgibt, desto mehr Bewertungen bekommt er für diese - stimmt das?
+
+
+# Zunächst füge ich die Datei mit den Büchern und Herausgebern der Datei mit den Bewertungen zu.
+
+
+```{r}
+ratings <- BX_Book_Ratings %>%
+  left_join(BX_Books)
+```
+
+```{r}
+books %>%
+  group_by(Publisher) %>%
+  summarise(Anzahl = n()) 
+```
+# Jetzt lasse ich mir ausrechnen, wie hoch die Anzahl der Bücher pro Herausgeber ist.
+
+```{r}
+books %>%
+  group_by(Publisher) %>%
+  summarise(AnzahlBücher = n()) %>%
+  arrange(desc(AnzahlBücher)) %>%
+  filter(AnzahlBücher > 49)
+```
+# Wir sehen, Harlequin hat am meisten Bücher herausgebracht, ganze 7535 Stück.
+
+# Nun interessiert mich, wie hoch die Anzahl der Bewertungen pro Publisher ist. Ich möchte ja wissen, ob es einen linearen Zusammenhang zwischen der Anzahl der Bewertungen und der Anzahl der Bücher gibt. 
+# Besteht ein solcher, dann sollte nach meinen Überlegungen der Publisher Harlequin auch am meisten Bewertungen für seine Bücher bekommen haben. 
+
+# Der Computer soll mir also im ratings-Datensatz berechnen, wie viele Bewertungen jeder Herausgeber hat.
+
+```{r}
+ratings %>%
+  group_by(Publisher) %>%
+  summarise(`Book-Rating` = n()) %>%
+  arrange(desc(Anzahl)) %>%
+  filter(Anzahl > 49)
+```
+
+# Nach mehreren Stunden Arbeit unterbreche ich nun meine Versuche. Eigentlich wollte ich erreichen, dass in der Tabelle neben der Anzahl der Bücher pro Publisher die Anzahl der Ratings angezeigt wird. 
+
+# Anschließend wollte ich mir die Regression visualisieren lassen. Dazu hatte ich mir folgenden Code überlegt: 
+
+```{r}
+fit <- lm (ratings$AnzahlBewertungen ~ ratings$AnzahlBücher)
+```
+
+
+```{r}
+ratings %>%
+  group_by(`Year-Of-Publication`) %>%
+  summarise(Anzahl = n()) %>%
+  arrange(desc(Anzahl)) %>%
+  filter(Anzahl > 49)
+```
+
+
+# Für die zweite Aufgabe ist das Erscheinungsjahr ausschlaggebend. Also ordne ich die Tabelle nach Year-Of-Publication. 
+# Die Frage ist, ob ältere Bücher mehr Ratings haben, weil sie mehr Zeit haben, um Ratings zu sammeln.
+# Meine Antwort ist nein. Laut der Tabelle haben die Bücher umso weniger Bewertungen, je älter sie werden.
+
+
+
+
+
+
+
+
